@@ -17,24 +17,27 @@ async def main() -> None:
     settings = BookingSettings()
     setup_logger("booking", settings.log_level)
 
+    users = settings.users
+    proxies = settings.proxies
+
     log.info(
         "config_loaded",
-        users=len(settings.booking_users),
-        proxies=len(settings.booking_proxy_urls),
+        users=len(users),
+        proxies=len(proxies),
         dry_run=settings.dry_run,
     )
 
     # Account manager — prefetch existing reservations
     account_mgr = AccountManager(
-        users=settings.booking_users,
+        users=users,
         api_key=settings.resy_api_key,
-        proxy_url=settings.booking_proxy_urls[0].url if settings.booking_proxy_urls else None,
+        proxy_url=proxies[0].url if proxies else None,
     )
     await account_mgr.prefetch_reservations()
 
     # Services
     notifier = DiscordNotifier(settings.discord_webhook_url or None)
-    checkout_pool = CheckoutPool(settings.booking_proxy_urls)
+    checkout_pool = CheckoutPool(proxies)
     booker = Booker(
         api_key=settings.resy_api_key,
         checkout_pool=checkout_pool,

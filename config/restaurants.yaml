@@ -6,6 +6,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: true
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "6377"
     name: "Red Hook Tavern"
@@ -14,6 +18,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: true
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "443"
     name: "i Sodi"
@@ -30,6 +38,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: true
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "25973"
     name: "L'Artusi"
@@ -38,6 +50,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: true
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "79460"
     name: "Penny"
@@ -46,6 +62,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: true
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "48994"
     name: "Dhamaka"
@@ -54,6 +74,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: true
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "1263"
     name: "Semma"
@@ -70,6 +94,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: true
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "834"
     name: "4 Charles Prime Rib"
@@ -86,6 +114,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: true
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "54591"
     name: "Bonnie's"
@@ -94,6 +126,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: true
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "84732"
     name: "Smithereens"
@@ -102,6 +138,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: true
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "LILIA"
     name: "Lilia"
@@ -110,6 +150,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: false
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "2567"
     name: "Via Carota"
@@ -118,6 +162,10 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 2
     enabled: true
+    day_configs:
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "65452"
     name: "Tatiana"

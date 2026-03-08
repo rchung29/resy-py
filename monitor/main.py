@@ -17,15 +17,17 @@ async def main() -> None:
 
     restaurants = load_restaurants()
 
+    proxies = settings.proxies
+
     log.info(
         "config_loaded",
         restaurants=len(restaurants),
-        proxies=len(settings.monitor_proxy_urls),
+        proxies=len(proxies),
         use_proxies=settings.use_proxies,
     )
 
     # Proxy rotation
-    proxy_rotator = ProxyRotator(settings.monitor_proxy_urls) if settings.use_proxies else None
+    proxy_rotator = ProxyRotator(proxies) if settings.use_proxies else None
 
     # WebSocket server
     ws_server = SlotBroadcastServer(host=settings.ws_host, port=settings.ws_port)
