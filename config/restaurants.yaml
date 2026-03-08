@@ -1,0 +1,136 @@
+restaurants:
+  - venue_id: "49453"
+    name: "Thai Diner"
+    days_in_advance: 6
+    release_time: "00:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "6377"
+    name: "Red Hook Tavern"
+    days_in_advance: 13
+    release_time: "00:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "443"
+    name: "i Sodi"
+    days_in_advance: 13
+    release_time: "00:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "2492"
+    name: "The Four Horsemen"
+    days_in_advance: 29
+    release_time: "07:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "25973"
+    name: "L'Artusi"
+    days_in_advance: 14
+    release_time: "09:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "79460"
+    name: "Penny"
+    days_in_advance: 14
+    release_time: "09:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "48994"
+    name: "Dhamaka"
+    days_in_advance: 14
+    release_time: "09:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "1263"
+    name: "Semma"
+    days_in_advance: 14
+    release_time: "09:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "62659"
+    name: "Claud"
+    days_in_advance: 14
+    release_time: "09:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "834"
+    name: "4 Charles Prime Rib"
+    days_in_advance: 20
+    release_time: "09:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "73589"
+    name: "Theodora"
+    days_in_advance: 30
+    release_time: "09:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "54591"
+    name: "Bonnie's"
+    days_in_advance: 13
+    release_time: "10:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "84732"
+    name: "Smithereens"
+    days_in_advance: 14
+    release_time: "10:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "LILIA"
+    name: "Lilia"
+    days_in_advance: 28
+    release_time: "10:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: false
+
+  - venue_id: "2567"
+    name: "Via Carota"
+    days_in_advance: 30
+    release_time: "10:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "65452"
+    name: "Tatiana"
+    days_in_advance: 28
+    release_time: "12:00"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true
+
+  - venue_id: "60029"
+    name: "Test Restaurant"
+    days_in_advance: 0
+    release_time: "18:07"
+    release_time_zone: "America/New_York"
+    party_size: 2
+    enabled: true

@@ -1,0 +1,27 @@
+[project]
+name = "resy-sniper"
+version = "0.1.0"
+description = "Two-service Resy reservation sniper"
+requires-python = ">=3.11"
+dependencies = [
+    "aiohttp>=3.13.3",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.9.1",
+    "pyyaml>=6.0.3",
+    "structlog>=25.5.0",
+    "websockets>=16.0",
+]
+
+[project.scripts]
+monitor = "monitor.main:main"
+booking = "booking.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sdk", "shared", "monitor", "booking"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

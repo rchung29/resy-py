@@ -1,0 +1,17 @@
+[Unit]
+Description=Resy Sniper - Booking Service
+After=network.target resy-monitor.service
+Wants=resy-monitor.service
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user/resy-sniper
+EnvironmentFile=/home/ec2-user/resy-sniper/.env
+ExecStart=/home/ec2-user/resy-sniper/.venv/bin/python -m booking.main
+Restart=on-failure
+RestartSec=5
+Environment=PYTHONPATH=/home/ec2-user/resy-sniper
+
+[Install]
+WantedBy=multi-user.target
