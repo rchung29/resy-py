@@ -19,8 +19,11 @@ class ReleaseWindow:
     release_time_zone: str
     release_datetime: datetime
     scan_start_datetime: datetime
-    target_date: str               # "YYYY-MM-DD"
     restaurants: list[RestaurantConfig] = field(default_factory=list)
+    restaurant_target_dates: dict[str, str] = field(default_factory=dict)  # venue_id -> "YYYY-MM-DD"
+
+    def target_date_for(self, venue_id: str) -> str:
+        return self.restaurant_target_dates[venue_id]
 
 
 def calculate_target_date(
@@ -96,7 +99,7 @@ def calculate_release_windows(
             )
             continue
 
-        window_id = f"{restaurant.release_time_zone}:{restaurant.release_time}:{target_date}"
+        window_id = f"{restaurant.release_time_zone}:{restaurant.release_time}"
 
         if window_id in window_map:
             window_map[window_id].restaurants.append(restaurant)
@@ -108,9 +111,10 @@ def calculate_release_windows(
                 release_time_zone=restaurant.release_time_zone,
                 release_datetime=release_dt,
                 scan_start_datetime=scan_start,
-                target_date=target_date,
                 restaurants=[restaurant],
             )
+
+        window_map[window_id].restaurant_target_dates[restaurant.venue_id] = target_date
 
     windows = sorted(window_map.values(), key=lambda w: w.scan_start_datetime)
     return windows
@@ -159,8 +163,7 @@ class Scheduler:
                     "window_scheduled",
                     window_id=window.id,
                     release_time=window.release_time,
-                    target_date=window.target_date,
-                    restaurants=[r.name for r in window.restaurants],
+                    restaurants={r.name: window.target_date_for(r.venue_id) for r in window.restaurants},
                     scan_starts_in_s=round(sleep_s),
                 )
                 await asyncio.sleep(sleep_s)
@@ -173,8 +176,7 @@ class Scheduler:
             log.info(
                 "window_starting",
                 window_id=window.id,
-                target_date=window.target_date,
-                restaurants=[r.name for r in window.restaurants],
+                restaurants={r.name: window.target_date_for(r.venue_id) for r in window.restaurants},
             )
 
             if self._on_window_start:

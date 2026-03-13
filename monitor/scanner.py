@@ -11,7 +11,8 @@ from sdk.client import ResyClient
 from sdk.errors import ResyAPIError
 from shared.filters import filter_slots
 from shared.logger import get_logger
-from shared.models import DiscoveredSlotsMessage, RestaurantConfig, SlotData
+from shared.models import DiscoveredSlotsMessage, RestaurantConfig
+from shared.slots import parse_find_slots_response
 
 if TYPE_CHECKING:
     from monitor.scheduler import ReleaseWindow
@@ -64,8 +65,7 @@ class Scanner:
         log.info(
             "scan_starting",
             window=key,
-            target_date=window.target_date,
-            restaurants=[r.name for r in window.restaurants],
+            restaurants={r.name: window.target_date_for(r.venue_id) for r in window.restaurants},
             interval_ms=self._scan_interval_ms,
             timeout_s=self._scan_timeout_s,
         )
@@ -73,7 +73,7 @@ class Scanner:
         # Each restaurant gets its own polling loop
         tasks = [
             asyncio.create_task(
-                self._scan_restaurant_loop(r, window.target_date, key)
+                self._scan_restaurant_loop(r, window.target_date_for(r.venue_id), key)
             )
             for r in window.restaurants
         ]
@@ -145,30 +145,10 @@ class Scanner:
                 party_size=restaurant.party_size,
             )
 
-            venue = None
-            venues = response.get("results", {}).get("venues", [])
-            if venues:
-                venue = venues[0]
-
-            if not venue:
+            venue_name, slot_datas = parse_find_slots_response(response)
+            if not slot_datas:
                 return
-
-            raw_slots = venue.get("slots", [])
-            if not raw_slots:
-                return
-
-            venue_name = venue.get("venue", {}).get("name") or restaurant.name
-
-            # Convert to SlotData
-            slot_datas = [
-                SlotData(
-                    config_id=s.get("config", {}).get("token", ""),
-                    time=s.get("date", {}).get("start", ""),
-                    type=s.get("config", {}).get("type"),
-                )
-                for s in raw_slots
-                if s.get("config", {}).get("token") and s.get("date", {}).get("start")
-            ]
+            venue_name = venue_name or restaurant.name
 
             log.info(
                 "raw_slots",

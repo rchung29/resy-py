@@ -1,3 +1,11 @@
+"""Unified resy-sniper service.
+
+Single async process: scheduler → scanner → booker. No WebSocket layer.
+
+Usage:
+    python -m main
+"""
+
 import asyncio
 import signal
 
@@ -5,8 +13,10 @@ from booking.account_manager import AccountManager
 from booking.booker import Booker
 from booking.checkout_pool import CheckoutPool
 from booking.notifications import DiscordNotifier
-from booking.ws_client import SlotReceiver
-from shared.config import BookingSettings
+from monitor.proxy_rotation import ProxyRotator
+from monitor.scanner import Scanner
+from monitor.scheduler import Scheduler
+from shared.config import Settings, load_restaurants
 from shared.logger import get_logger, setup_logger
 from shared.models import DiscoveredSlotsMessage
 
@@ -14,52 +24,62 @@ log = get_logger("main")
 
 
 async def main() -> None:
-    settings = BookingSettings()
-    setup_logger("booking", settings.log_level)
+    settings = Settings()
+    setup_logger("resy-sniper", settings.log_level)
 
+    restaurants = load_restaurants()
+
+    scan_proxies = settings.scan_proxies
+    book_proxies = settings.book_proxies
     users = settings.users
-    proxies = settings.proxies
 
     log.info(
         "config_loaded",
+        restaurants=len(restaurants),
+        scan_proxies=len(scan_proxies),
+        book_proxies=len(book_proxies),
         users=len(users),
-        proxies=len(proxies),
         dry_run=settings.dry_run,
     )
 
-    # Account manager — prefetch existing reservations
+    # --- Proxy rotation ---
+    scan_rotator = ProxyRotator(scan_proxies) if settings.use_proxies and scan_proxies else None
+    checkout_pool = CheckoutPool(book_proxies)
+
+    # --- Account manager ---
     account_mgr = AccountManager(
         users=users,
         api_key=settings.resy_api_key,
-        proxy_url=proxies[0].url if proxies else None,
+        proxy_url=book_proxies[0].url if book_proxies else None,
     )
-    await account_mgr.prefetch_reservations()
+    if settings.prefetch_reservations:
+        await account_mgr.prefetch_reservations()
+    else:
+        log.info("prefetch_disabled")
 
-    # Services
+    # --- Booker + notifier ---
     notifier = DiscordNotifier(settings.discord_webhook_url or None)
-    checkout_pool = CheckoutPool(proxies)
     booker = Booker(
         api_key=settings.resy_api_key,
         checkout_pool=checkout_pool,
         dry_run=settings.dry_run,
     )
 
-    # State keyed by target_date
+    # --- Booking state ---
     date_state: dict[str, dict] = {}
     booked_keys: set[str] = set()
 
     def get_date_state(target_date: str) -> dict:
         if target_date not in date_state:
             date_state[target_date] = {
-                "rate_limited": set(),
                 "auth_failed": set(),
             }
         return date_state[target_date]
 
-    async def on_slots_received(msg: DiscoveredSlotsMessage) -> None:
+    async def on_slots_discovered(msg: DiscoveredSlotsMessage) -> None:
+        """Called directly by scanner when slots are found — no WebSocket."""
         state = get_date_state(msg.target_date)
-
-        exclude = state["rate_limited"] | state["auth_failed"]
+        exclude = state["auth_failed"]
 
         while True:
             per_venue_exclude = exclude | {
@@ -102,11 +122,6 @@ async def main() -> None:
                 )
                 break
 
-            if result.status == "rate_limited":
-                state["rate_limited"].add(user.id)
-                log.warning("user_rate_limited", user=user.id, date=msg.target_date)
-                continue
-
             if result.status == "auth_failed":
                 state["auth_failed"].add(user.id)
                 log.error("user_auth_failed", user=user.id, date=msg.target_date)
@@ -125,23 +140,44 @@ async def main() -> None:
             )
             break
 
-    # WebSocket client
-    receiver = SlotReceiver(
-        monitor_url=settings.monitor_ws_url,
-        on_slots_received=on_slots_received,
+    # --- Scanner (calls on_slots_discovered directly) ---
+    scanner = Scanner(
+        api_key=settings.resy_api_key,
+        scan_interval_ms=settings.scan_interval_ms,
+        scan_timeout_seconds=settings.scan_timeout_seconds,
+        proxy_rotator=scan_rotator,
+        use_proxies=settings.use_proxies,
+        on_slots_discovered=on_slots_discovered,
     )
 
-    # Graceful shutdown
+    # --- Scheduler ---
+    async def on_window_start(window):
+        log.info(
+            "window_triggered",
+            restaurants={r.name: window.target_date_for(r.venue_id) for r in window.restaurants},
+        )
+        await scanner.start_scan(window)
+
+    scheduler = Scheduler(
+        restaurants=restaurants,
+        scan_start_seconds_before=settings.scan_start_seconds_before,
+        on_window_start=on_window_start,
+    )
+
+    # --- Graceful shutdown ---
     loop = asyncio.get_event_loop()
     for sig_ in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig_, lambda: asyncio.create_task(_shutdown()))
+        loop.add_signal_handler(sig_, lambda: asyncio.create_task(shutdown(scanner, scheduler)))
 
-    log.info("booking_service_started")
-    await receiver.run()
+    log.info("resy_sniper_started")
+    await scheduler.run()
 
 
-async def _shutdown() -> None:
+async def shutdown(scanner: Scanner, scheduler: Scheduler) -> None:
     log.info("shutting_down")
+    scheduler.stop()
+    scanner.stop_all()
+    await asyncio.sleep(0.5)
     for task in asyncio.all_tasks():
         if task is not asyncio.current_task():
             task.cancel()

@@ -22,42 +22,44 @@ def _parse_json_users(raw: str) -> list[UserConfig]:
     return [UserConfig.model_validate(u) for u in parsed]
 
 
-class MonitorSettings(BaseSettings):
+class Settings(BaseSettings):
+    """Unified settings for the single-process resy-sniper."""
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
     resy_api_key: str = DEFAULT_RESY_API_KEY
-    monitor_proxy_urls: str = ""
+    log_level: str = "INFO"
+
+    # Scanning
+    scan_proxy_urls: str = ""
     scan_start_seconds_before: int = 15
     scan_interval_ms: int = 3500
     scan_timeout_seconds: int = 120
     use_proxies: bool = False
-    ws_host: str = "0.0.0.0"
-    ws_port: int = 8765
-    log_level: str = "INFO"
 
-    @property
-    def proxies(self) -> list[ProxyConfig]:
-        return _parse_comma_proxies(self.monitor_proxy_urls)
+    # Passive monitor
+    passive_monitor_interval_s: int = 45
+    passive_monitor_calendar_days: int = 30
 
-
-class BookingSettings(BaseSettings):
-    model_config = {"env_file": ".env", "extra": "ignore"}
-
-    resy_api_key: str = DEFAULT_RESY_API_KEY
+    # Booking
     booking_proxy_urls: str = ""
     booking_users: str = "[]"
     discord_webhook_url: str = ""
     dry_run: bool = False
-    monitor_ws_url: str = "ws://localhost:8765"
-    log_level: str = "INFO"
+    prefetch_reservations: bool = True
 
     @property
-    def proxies(self) -> list[ProxyConfig]:
+    def scan_proxies(self) -> list[ProxyConfig]:
+        return _parse_comma_proxies(self.scan_proxy_urls)
+
+    @property
+    def book_proxies(self) -> list[ProxyConfig]:
         return _parse_comma_proxies(self.booking_proxy_urls)
 
     @property
     def users(self) -> list[UserConfig]:
         return _parse_json_users(self.booking_users)
+
 
 
 def load_restaurants(path: str | None = None) -> list[RestaurantConfig]:

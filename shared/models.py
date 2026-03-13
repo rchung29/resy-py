@@ -18,6 +18,7 @@ class RestaurantConfig(BaseModel):
     party_size: int = 2
     day_configs: list[DayConfig] = []
     enabled: bool = True
+    passive_monitor: bool = False
 
 
 class ProxyConfig(BaseModel):

@@ -101,8 +101,20 @@ class Booker:
                     retry_count = 0
 
                 case "rate_limited":
-                    self.release_slot(venue_id, target_date, slot.time)
-                    return result
+                    # Rate limit is per-proxy, not per-account — rotate proxy and retry
+                    retry_count += 1
+                    if retry_count >= MAX_RETRIES_PER_SLOT:
+                        log.warning(
+                            "max_rate_limit_retries",
+                            user=user.id,
+                            time=slot.time,
+                            retries=retry_count,
+                        )
+                        self.release_slot(venue_id, target_date, slot.time)
+                        slot_index += 1
+                        retry_count = 0
+                    else:
+                        log.info("rate_limit_retry", user=user.id, time=slot.time, retry=retry_count)
 
                 case "auth_failed":
                     self.release_slot(venue_id, target_date, slot.time)

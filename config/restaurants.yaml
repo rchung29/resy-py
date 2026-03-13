@@ -4,21 +4,13 @@ restaurants:
     days_in_advance: 6
     release_time: "00:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
     day_configs:
-      - { day: 4, start: "19:00", end: "22:30" }
-      - { day: 5, start: "00:00", end: "23:59" }
-      - { day: 6, start: "00:00", end: "23:59" }
-
-  - venue_id: "6377"
-    name: "Red Hook Tavern"
-    days_in_advance: 13
-    release_time: "00:00"
-    release_time_zone: "America/New_York"
-    party_size: 2
-    enabled: true
-    day_configs:
+      - { day: 1, start: "19:00", end: "22:30" }
+      - { day: 2, start: "19:00", end: "22:30" }
+      - { day: 3, start: "19:00", end: "22:30" }
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "00:00", end: "23:59" }
       - { day: 6, start: "00:00", end: "23:59" }
@@ -28,16 +20,25 @@ restaurants:
     days_in_advance: 13
     release_time: "00:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
+    day_configs:
+      - { day: 1, start: "19:00", end: "22:30" }
+      - { day: 2, start: "19:00", end: "22:30" }
+      - { day: 3, start: "19:00", end: "22:30" }
+      - { day: 4, start: "19:00", end: "22:30" }
+      - { day: 5, start: "00:00", end: "23:59" }
+      - { day: 6, start: "00:00", end: "23:59" }
 
   - venue_id: "2492"
     name: "The Four Horsemen"
     days_in_advance: 29
     release_time: "07:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "00:00", end: "23:59" }
@@ -48,8 +49,9 @@ restaurants:
     days_in_advance: 14
     release_time: "09:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "00:00", end: "23:59" }
@@ -60,8 +62,9 @@ restaurants:
     days_in_advance: 14
     release_time: "09:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "00:00", end: "23:59" }
@@ -72,8 +75,9 @@ restaurants:
     days_in_advance: 14
     release_time: "09:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "00:00", end: "23:59" }
@@ -84,16 +88,18 @@ restaurants:
     days_in_advance: 14
     release_time: "09:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
 
   - venue_id: "62659"
     name: "Claud"
     days_in_advance: 14
     release_time: "09:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "00:00", end: "23:59" }
@@ -104,16 +110,18 @@ restaurants:
     days_in_advance: 20
     release_time: "09:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
 
   - venue_id: "73589"
     name: "Theodora"
     days_in_advance: 30
     release_time: "09:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "00:00", end: "23:59" }
@@ -124,44 +132,48 @@ restaurants:
     days_in_advance: 13
     release_time: "10:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
-      - { day: 5, start: "00:00", end: "23:59" }
-      - { day: 6, start: "00:00", end: "23:59" }
+      - { day: 5, start: "19:00", end: "22:30" }
+      - { day: 6, start: "19:00", end: "22:30" }
 
   - venue_id: "84732"
     name: "Smithereens"
     days_in_advance: 14
     release_time: "10:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
-      - { day: 5, start: "00:00", end: "23:59" }
-      - { day: 6, start: "00:00", end: "23:59" }
+      - { day: 5, start: "19:00", end: "22:30" }
+      - { day: 6, start: "19:00", end: "22:30" }
 
-  - venue_id: "LILIA"
+  - venue_id: "418"
     name: "Lilia"
     days_in_advance: 28
     release_time: "10:00"
     release_time_zone: "America/New_York"
-    party_size: 2
-    enabled: false
+    party_size: 4
+    enabled: true
+    passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
-      - { day: 5, start: "00:00", end: "23:59" }
-      - { day: 6, start: "00:00", end: "23:59" }
+      - { day: 5, start: "19:00", end: "22:30" }
+      - { day: 6, start: "19:00", end: "22:30" }
 
   - venue_id: "2567"
     name: "Via Carota"
     days_in_advance: 30
     release_time: "10:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
+    passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "00:00", end: "23:59" }
@@ -172,13 +184,6 @@ restaurants:
     days_in_advance: 28
     release_time: "12:00"
     release_time_zone: "America/New_York"
-    party_size: 2
+    party_size: 4
     enabled: true
-
-  - venue_id: "60029"
-    name: "Test Restaurant"
-    days_in_advance: 0
-    release_time: "18:07"
-    release_time_zone: "America/New_York"
-    party_size: 2
-    enabled: true
+    passive_monitor: true

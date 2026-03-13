@@ -1,7 +1,7 @@
 [project]
 name = "resy-sniper"
-version = "0.1.0"
-description = "Two-service Resy reservation sniper"
+version = "0.2.0"
+description = "Resy reservation sniper"
 requires-python = ">=3.11"
 dependencies = [
     "aiohttp>=3.13.3",
@@ -9,12 +9,7 @@ dependencies = [
     "pydantic-settings>=2.9.1",
     "pyyaml>=6.0.3",
     "structlog>=25.5.0",
-    "websockets>=16.0",
 ]
-
-[project.scripts]
-monitor = "monitor.main:main"
-booking = "booking.main:main"
 
 [build-system]
 requires = ["hatchling"]
