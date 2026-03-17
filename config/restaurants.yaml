@@ -149,9 +149,9 @@ restaurants:
     enabled: true
     passive_monitor: true
     day_configs:
-      - { day: 4, start: "19:00", end: "22:30" }
-      - { day: 5, start: "19:00", end: "22:30" }
-      - { day: 6, start: "19:00", end: "22:30" }
+      - { day: 4, start: "19:00", end: "20:30" }
+      - { day: 5, start: "19:00", end: "20:30" }
+      - { day: 6, start: "19:00", end: "20:30" }
 
   - venue_id: "418"
     name: "Lilia"
