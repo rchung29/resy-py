@@ -51,7 +51,7 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 4
     enabled: true
-    passive_monitor: true
+    passive_monitor: false
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "00:00", end: "23:59" }
@@ -64,11 +64,11 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 4
     enabled: true
-    passive_monitor: true
+    passive_monitor: false
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
-      - { day: 5, start: "00:00", end: "23:59" }
-      - { day: 6, start: "00:00", end: "23:59" }
+      - { day: 5, start: "12:00", end: "23:59" }
+      - { day: 6, start: "12:00", end: "23:59" }
 
   - venue_id: "48994"
     name: "Dhamaka"
@@ -76,8 +76,8 @@ restaurants:
     release_time: "09:00"
     release_time_zone: "America/New_York"
     party_size: 4
-    enabled: true
-    passive_monitor: true
+    enabled: false
+    passive_monitor: false
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "00:00", end: "23:59" }
@@ -99,11 +99,11 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 4
     enabled: true
-    passive_monitor: true
+    passive_monitor: false
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
-      - { day: 5, start: "00:00", end: "23:59" }
-      - { day: 6, start: "00:00", end: "23:59" }
+      - { day: 5, start: "19:00", end: "22:30" }
+      - { day: 6, start: "19:00", end: "22:30" }
 
   - venue_id: "834"
     name: "4 Charles Prime Rib"
@@ -124,8 +124,8 @@ restaurants:
     passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
-      - { day: 5, start: "00:00", end: "23:59" }
-      - { day: 6, start: "00:00", end: "23:59" }
+      - { day: 5, start: "12:00", end: "23:59" }
+      - { day: 6, start: "12:00", end: "23:59" }
 
   - venue_id: "54591"
     name: "Bonnie's"
@@ -133,8 +133,8 @@ restaurants:
     release_time: "10:00"
     release_time_zone: "America/New_York"
     party_size: 4
-    enabled: true
-    passive_monitor: true
+    enabled: false
+    passive_monitor: false
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "19:00", end: "22:30" }
@@ -160,7 +160,7 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 4
     enabled: true
-    passive_monitor: true
+    passive_monitor: false
     day_configs:
       - { day: 4, start: "19:00", end: "22:30" }
       - { day: 5, start: "19:00", end: "22:30" }
