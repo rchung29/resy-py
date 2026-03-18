@@ -12,15 +12,14 @@ import signal
 from booking.account_manager import AccountManager
 from booking.auth_cache import AuthCache
 from booking.booker import Booker
-from booking.checkout_pool import CheckoutPool
 from booking.notifications import DiscordNotifier
 from monitor.calendar_monitor import CalendarMonitor
-from monitor.proxy_rotation import ProxyRotator
 from monitor.scanner import Scanner
 from monitor.scheduler import Scheduler
 from shared.config import Settings, load_restaurants
 from shared.logger import get_logger, setup_logger
 from shared.models import DiscoveredSlotsMessage
+from shared.proxy_pool import ProxyPool
 
 log = get_logger("main")
 
@@ -31,37 +30,35 @@ async def main() -> None:
 
     restaurants = load_restaurants()
 
-    scan_proxies = settings.scan_proxies
-    book_proxies = settings.book_proxies
+    proxies = settings.proxies
     users = settings.users
 
     log.info(
         "config_loaded",
         restaurants=len(restaurants),
-        scan_proxies=len(scan_proxies),
-        book_proxies=len(book_proxies),
+        proxies=len(proxies),
         users=len(users),
         dry_run=settings.dry_run,
     )
 
+    # --- Unified proxy pool ---
+    proxy_pool = ProxyPool(proxies) if settings.use_proxies and proxies else None
+
     # --- Auth cache ---
+    first_proxy = proxies[0].url if proxies else None
     auth_cache = AuthCache(
         api_key=settings.resy_api_key,
-        proxy_url=book_proxies[0].url if book_proxies else None,
+        proxy_url=first_proxy,
     )
     auth_cache.register_users(users)
     await auth_cache.warm_all()
-
-    # --- Proxy rotation ---
-    scan_rotator = ProxyRotator(scan_proxies) if settings.use_proxies and scan_proxies else None
-    checkout_pool = CheckoutPool(book_proxies)
 
     # --- Account manager ---
     account_mgr = AccountManager(
         users=users,
         auth_cache=auth_cache,
         api_key=settings.resy_api_key,
-        proxy_url=book_proxies[0].url if book_proxies else None,
+        proxy_url=first_proxy,
     )
     if settings.prefetch_reservations:
         await account_mgr.prefetch_reservations()
@@ -72,7 +69,7 @@ async def main() -> None:
     notifier = DiscordNotifier(settings.discord_webhook_url or None)
     booker = Booker(
         api_key=settings.resy_api_key,
-        checkout_pool=checkout_pool,
+        proxy_pool=proxy_pool or ProxyPool([]),
         dry_run=settings.dry_run,
     )
 
@@ -201,8 +198,7 @@ async def main() -> None:
         api_key=settings.resy_api_key,
         scan_interval_ms=settings.scan_interval_ms,
         scan_timeout_seconds=settings.scan_timeout_seconds,
-        proxy_rotator=scan_rotator,
-        use_proxies=settings.use_proxies,
+        proxy_pool=proxy_pool,
         on_slots_discovered=sniper_on_slots,
     )
 
@@ -233,8 +229,7 @@ async def main() -> None:
             api_key=settings.resy_api_key,
             poll_interval_s=settings.passive_monitor_interval_s,
             calendar_days=settings.passive_monitor_calendar_days,
-            proxy_rotator=scan_rotator,
-            use_proxies=settings.use_proxies,
+            proxy_pool=proxy_pool,
             on_slots_discovered=monitor_on_slots,
         )
         log.info(

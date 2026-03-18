@@ -6,12 +6,12 @@ import time
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Awaitable, Callable
 
-from monitor.proxy_rotation import DEFAULT_RATE_LIMIT_S
 from sdk.client import ResyClient
 from sdk.errors import ResyAPIError
 from shared.filters import filter_slots
 from shared.logger import get_logger
 from shared.models import DiscoveredSlotsMessage, RestaurantConfig
+from shared.proxy_pool import ProxyPool
 from shared.slots import parse_find_slots_response
 
 if TYPE_CHECKING:
@@ -35,15 +35,13 @@ class Scanner:
         api_key: str,
         scan_interval_ms: int = 1000,
         scan_timeout_seconds: int = 120,
-        proxy_rotator=None,
-        use_proxies: bool = True,
+        proxy_pool: ProxyPool | None = None,
         on_slots_discovered: Callable[[DiscoveredSlotsMessage], Awaitable[None]] | None = None,
     ):
         self._api_key = api_key
         self._scan_interval_ms = scan_interval_ms
         self._scan_timeout_s = scan_timeout_seconds
-        self._proxy_rotator = proxy_rotator
-        self._use_proxies = use_proxies
+        self._proxy_pool = proxy_pool
         self._on_slots_discovered = on_slots_discovered
         self._active_scans: dict[str, bool] = {}
         self._completed_restaurants: set[str] = set()
@@ -129,9 +127,7 @@ class Scanner:
         self, restaurant: RestaurantConfig, target_date: str
     ) -> None:
         """Scan a single restaurant, filter slots, emit if any match."""
-        proxy_url = None
-        if self._use_proxies and self._proxy_rotator:
-            proxy_url = self._proxy_rotator.get_next()
+        proxy_url = self._proxy_pool.acquire() if self._proxy_pool else None
 
         client = ResyClient(
             api_key=self._api_key,
@@ -186,11 +182,12 @@ class Scanner:
 
         except ResyAPIError as e:
             is_waf = e.status == 500 and (not e.raw_body or e.raw_body.strip() == "")
-            should_rotate = e.status in (429, 502) or is_waf
 
-            if should_rotate and self._use_proxies and self._proxy_rotator and proxy_url:
-                cooldown = 8.0 if is_waf else DEFAULT_RATE_LIMIT_S
-                self._proxy_rotator.mark_rate_limited(proxy_url, cooldown)
+            if proxy_url and self._proxy_pool:
+                if is_waf:
+                    self._proxy_pool.mark_bad(proxy_url, cooldown_s=8.0)
+                elif e.status in (429, 502):
+                    self._proxy_pool.mark_bad(proxy_url, cooldown_s=60.0)
 
             if e.status == 429:
                 log.warning("rate_limited", restaurant=restaurant.name)
@@ -203,6 +200,8 @@ class Scanner:
         except Exception as e:
             log.error("scan_error", restaurant=restaurant.name, error=str(e))
         finally:
+            if proxy_url and self._proxy_pool:
+                self._proxy_pool.release(proxy_url)
             await client.close()
 
     def stop_all(self) -> None:

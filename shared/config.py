@@ -30,31 +30,28 @@ class Settings(BaseSettings):
     resy_api_key: str = DEFAULT_RESY_API_KEY
     log_level: str = "INFO"
 
+    # Proxies (single pool for all operations)
+    proxy_urls: str = ""
+    use_proxies: bool = False
+
     # Scanning
-    scan_proxy_urls: str = ""
     scan_start_seconds_before: int = 15
     scan_interval_ms: int = 3500
     scan_timeout_seconds: int = 120
-    use_proxies: bool = False
 
     # Passive monitor
     passive_monitor_interval_s: int = 45
     passive_monitor_calendar_days: int = 30
 
     # Booking
-    booking_proxy_urls: str = ""
     booking_users: str = "[]"
     discord_webhook_url: str = ""
     dry_run: bool = False
     prefetch_reservations: bool = True
 
     @property
-    def scan_proxies(self) -> list[ProxyConfig]:
-        return _parse_comma_proxies(self.scan_proxy_urls)
-
-    @property
-    def book_proxies(self) -> list[ProxyConfig]:
-        return _parse_comma_proxies(self.booking_proxy_urls)
+    def proxies(self) -> list[ProxyConfig]:
+        return _parse_comma_proxies(self.proxy_urls)
 
     @property
     def users(self) -> list[UserConfig]:

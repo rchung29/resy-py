@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
-from booking.checkout_pool import CheckoutPool
 from sdk.client import ResyClient
 from sdk.errors import ResyAPIError
 from shared.logger import get_logger
 from shared.models import SlotData, UserConfig
+from shared.proxy_pool import ProxyPool
 
 log = get_logger("booker")
 
@@ -24,11 +24,11 @@ class Booker:
     def __init__(
         self,
         api_key: str,
-        checkout_pool: CheckoutPool,
+        proxy_pool: ProxyPool,
         dry_run: bool = False,
     ):
         self._api_key = api_key
-        self._checkout_pool = checkout_pool
+        self._proxy_pool = proxy_pool
         self._dry_run = dry_run
         self._claimed_slots: set[str] = set()
 
@@ -58,6 +58,7 @@ class Booker:
         """Try slots sequentially until one succeeds or all fail."""
         slot_index = 0
         retry_count = 0
+        last_result: BookingResult | None = None
 
         log.info(
             "processing_slots",
@@ -79,6 +80,7 @@ class Booker:
                 user, auth_token, payment_method_id,
                 venue_id, target_date, party_size, slot,
             )
+            last_result = result
 
             if result.success:
                 return result
@@ -109,10 +111,14 @@ class Booker:
                     slot_index += 1
                     retry_count = 0
 
+        # Propagate the last actual error instead of a generic "unknown"
+        if last_result:
+            return last_result
+
         return BookingResult(
             success=False,
-            status="unknown",
-            error_message="All slots failed",
+            status="sold_out",
+            error_message="All slots exhausted",
         )
 
     async def attempt_booking(
@@ -126,7 +132,7 @@ class Booker:
         slot: SlotData,
     ) -> BookingResult:
         """Execute details -> book for a single slot."""
-        proxy_url = self._checkout_pool.get_next()
+        proxy_url = self._proxy_pool.acquire()
 
         client = ResyClient(
             api_key=self._api_key,
@@ -193,7 +199,9 @@ class Booker:
             result = self._classify_error(e)
 
             if result.status == "waf_blocked" and proxy_url:
-                self._checkout_pool.mark_bad(proxy_url)
+                self._proxy_pool.mark_bad(proxy_url)
+            elif result.status == "rate_limited" and proxy_url:
+                self._proxy_pool.mark_bad(proxy_url, cooldown_s=60)
 
             log.warning(
                 "booking_error",
@@ -213,6 +221,8 @@ class Booker:
                 error_message=str(e),
             )
         finally:
+            if proxy_url:
+                self._proxy_pool.release(proxy_url)
             await client.close()
 
     def _classify_error(self, error: ResyAPIError) -> BookingResult:
