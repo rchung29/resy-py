@@ -29,8 +29,8 @@ class ProxyConfig(BaseModel):
 
 class UserConfig(BaseModel):
     id: str
-    resy_auth_token: str
-    resy_payment_method_id: int
+    email: str
+    password: str
 
 
 # --- WebSocket message ---

@@ -1,5 +1,6 @@
 import asyncio
 
+from booking.auth_cache import AuthCache, AuthCredentials
 from sdk.client import ResyClient
 from shared.logger import get_logger
 from shared.models import ExistingReservation, UserConfig
@@ -15,10 +16,12 @@ class AccountManager:
     def __init__(
         self,
         users: list[UserConfig],
+        auth_cache: AuthCache,
         api_key: str,
         proxy_url: str | None = None,
     ):
         self._users = users
+        self._auth_cache = auth_cache
         self._api_key = api_key
         self._proxy_url = proxy_url
         self._reservations: dict[str, list[ExistingReservation]] = {}
@@ -26,6 +29,10 @@ class AccountManager:
     @property
     def users(self) -> list[UserConfig]:
         return self._users
+
+    async def get_user_credentials(self, user_id: str) -> AuthCredentials | None:
+        """Get auth credentials for a user from the cache."""
+        return await self._auth_cache.get_credentials(user_id)
 
     async def prefetch_reservations(self) -> None:
         """Fetch existing reservations for all users."""
@@ -71,9 +78,14 @@ class AccountManager:
 
     async def _fetch_user(self, user: UserConfig) -> list[ExistingReservation]:
         """Fetch reservations for a single user with timeout."""
+        creds = await self._auth_cache.get_credentials(user.id)
+        if not creds:
+            log.warning("prefetch_no_credentials", user=user.id)
+            return []
+
         client = ResyClient(
             api_key=self._api_key,
-            auth_token=user.resy_auth_token,
+            auth_token=creds.auth_token,
             proxy_url=self._proxy_url,
         )
         try:

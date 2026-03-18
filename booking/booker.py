@@ -17,6 +17,7 @@ class BookingResult:
     status: str  # "success", "waf_blocked", "sold_out", "rate_limited", "auth_failed", "server_error", "no_book_token", "unknown"
     reservation_id: int | None = None
     error_message: str | None = None
+    http_status: int | None = None
 
 
 class Booker:
@@ -47,6 +48,8 @@ class Booker:
     async def process_slots(
         self,
         user: UserConfig,
+        auth_token: str,
+        payment_method_id: int,
         venue_id: str,
         target_date: str,
         party_size: int,
@@ -73,7 +76,8 @@ class Booker:
                 continue
 
             result = await self.attempt_booking(
-                user, venue_id, target_date, party_size, slot
+                user, auth_token, payment_method_id,
+                venue_id, target_date, party_size, slot,
             )
 
             if result.success:
@@ -95,32 +99,12 @@ class Booker:
                     else:
                         log.info("waf_retry", user=user.id, time=slot.time, retry=retry_count)
 
-                case "sold_out":
-                    log.info("slot_sold_out", user=user.id, time=slot.time)
-                    slot_index += 1
-                    retry_count = 0
-
-                case "rate_limited":
-                    # Rate limit is per-proxy, not per-account — rotate proxy and retry
-                    retry_count += 1
-                    if retry_count >= MAX_RETRIES_PER_SLOT:
-                        log.warning(
-                            "max_rate_limit_retries",
-                            user=user.id,
-                            time=slot.time,
-                            retries=retry_count,
-                        )
-                        self.release_slot(venue_id, target_date, slot.time)
-                        slot_index += 1
-                        retry_count = 0
-                    else:
-                        log.info("rate_limit_retry", user=user.id, time=slot.time, retry=retry_count)
-
                 case "auth_failed":
                     self.release_slot(venue_id, target_date, slot.time)
                     return result
 
                 case _:
+                    # sold_out, rate_limited, server_error, unknown — move to next slot
                     self.release_slot(venue_id, target_date, slot.time)
                     slot_index += 1
                     retry_count = 0
@@ -134,6 +118,8 @@ class Booker:
     async def attempt_booking(
         self,
         user: UserConfig,
+        auth_token: str,
+        payment_method_id: int,
         venue_id: str,
         target_date: str,
         party_size: int,
@@ -144,7 +130,7 @@ class Booker:
 
         client = ResyClient(
             api_key=self._api_key,
-            auth_token=user.resy_auth_token,
+            auth_token=auth_token,
             proxy_url=proxy_url,
         )
 
@@ -185,7 +171,7 @@ class Booker:
             # Step 3: Book
             book_result = await client.book_reservation(
                 book_token=book_token,
-                payment_method_id=user.resy_payment_method_id,
+                payment_method_id=payment_method_id,
             )
 
             reservation_id = book_result.get("reservation_id")
@@ -232,49 +218,65 @@ class Booker:
     def _classify_error(self, error: ResyAPIError) -> BookingResult:
         """Classify API error into booking status."""
         raw = error.raw_body or ""
+        hs = error.status
 
         # WAF block: 500 with empty/whitespace/{} body
-        if error.status == 500:
+        if hs == 500:
             if not raw.strip() or raw.strip() == "{}":
                 return BookingResult(
                     success=False,
                     status="waf_blocked",
                     error_message="WAF blocked (500 empty body)",
+                    http_status=hs,
                 )
             return BookingResult(
                 success=False,
                 status="server_error",
                 error_message=str(error),
+                http_status=hs,
             )
 
         # 412 = sold out
-        if error.status == 412:
+        if hs == 412:
             return BookingResult(
                 success=False,
                 status="sold_out",
                 error_message="Slot no longer available",
+                http_status=hs,
+            )
+
+        # 419 = auth token expired/invalid
+        if hs == 419:
+            return BookingResult(
+                success=False,
+                status="auth_failed",
+                error_message="Auth token expired or invalid (419)",
+                http_status=hs,
             )
 
         # 429 = rate limited
-        if error.status == 429:
+        if hs == 429:
             return BookingResult(
                 success=False,
                 status="rate_limited",
                 error_message="Rate limited",
+                http_status=hs,
             )
 
         # 401/403 = auth failed
-        if error.status in (401, 403):
+        if hs in (401, 403):
             return BookingResult(
                 success=False,
                 status="auth_failed",
                 error_message=str(error),
+                http_status=hs,
             )
 
         return BookingResult(
             success=False,
             status="unknown",
-            error_message=str(error),
+            error_message=f"HTTP {hs}: {raw[:200]}" if raw else str(error),
+            http_status=hs,
         )
 
     def reset(self) -> None:
