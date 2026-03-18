@@ -89,8 +89,8 @@ restaurants:
     release_time: "09:00"
     release_time_zone: "America/New_York"
     party_size: 4
-    enabled: true
-    passive_monitor: true
+    enabled: false
+    passive_monitor: false
 
   - venue_id: "62659"
     name: "Claud"
@@ -147,7 +147,7 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 4
     enabled: true
-    passive_monitor: true
+    passive_monitor: false
     day_configs:
       - { day: 4, start: "19:00", end: "21:00" }
       - { day: 5, start: "19:00", end: "21:00" }
@@ -185,5 +185,5 @@ restaurants:
     release_time: "12:00"
     release_time_zone: "America/New_York"
     party_size: 4
-    enabled: true
-    passive_monitor: true
+    enabled: false
+    passive_monitor: false
