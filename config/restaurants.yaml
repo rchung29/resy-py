@@ -41,8 +41,8 @@ restaurants:
     passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "21:00" }
-      - { day: 5, start: "00:00", end: "21:00" }
-      - { day: 6, start: "00:00", end: "21:00" }
+      - { day: 5, start: "18:00", end: "21:00" }
+      - { day: 6, start: "18:00", end: "21:00" }
 
   - venue_id: "25973"
     name: "L'Artusi"
@@ -51,11 +51,11 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 4
     enabled: true
-    passive_monitor: false
+    passive_monitor: true
     day_configs:
-      - { day: 4, start: "19:00", end: "21:00" }
-      - { day: 5, start: "00:00", end: "21:00" }
-      - { day: 6, start: "00:00", end: "21:00" }
+      - { day: 4, start: "19:00", end: "20:00" }
+      - { day: 5, start: "18:00", end: "20:00" }
+      - { day: 6, start: "18:00", end: "20:00" }
 
   - venue_id: "79460"
     name: "Penny"
@@ -64,11 +64,11 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 4
     enabled: true
-    passive_monitor: false
+    passive_monitor: true
     day_configs:
-      - { day: 4, start: "19:00", end: "21:00" }
-      - { day: 5, start: "12:00", end: "21:00" }
-      - { day: 6, start: "12:00", end: "21:00" }
+      - { day: 4, start: "19:00", end: "20:00" }
+      - { day: 5, start: "18:00", end: "20:00" }
+      - { day: 6, start: "18:00", end: "20:00" }
 
   - venue_id: "48994"
     name: "Dhamaka"
@@ -80,8 +80,8 @@ restaurants:
     passive_monitor: false
     day_configs:
       - { day: 4, start: "19:00", end: "21:00" }
-      - { day: 5, start: "00:00", end: "21:00" }
-      - { day: 6, start: "00:00", end: "21:00" }
+      - { day: 5, start: "18:00", end: "21:00" }
+      - { day: 6, start: "18:00", end: "21:00" }
 
   - venue_id: "1263"
     name: "Semma"
@@ -99,11 +99,11 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 4
     enabled: true
-    passive_monitor: false
+    passive_monitor: true
     day_configs:
-      - { day: 4, start: "19:00", end: "21:00" }
-      - { day: 5, start: "19:00", end: "21:00" }
-      - { day: 6, start: "19:00", end: "21:00" }
+      - { day: 4, start: "19:00", end: "20:00" }
+      - { day: 5, start: "18:00", end: "20:00" }
+      - { day: 6, start: "18:00", end: "20:00" }
 
   - venue_id: "834"
     name: "4 Charles Prime Rib"
@@ -120,12 +120,12 @@ restaurants:
     release_time: "09:00"
     release_time_zone: "America/New_York"
     party_size: 4
-    enabled: true
-    passive_monitor: true
+    enabled: false
+    passive_monitor: false
     day_configs:
       - { day: 4, start: "19:00", end: "21:00" }
-      - { day: 5, start: "12:00", end: "21:00" }
-      - { day: 6, start: "12:00", end: "21:00" }
+      - { day: 5, start: "18:00", end: "21:00" }
+      - { day: 6, start: "18:00", end: "21:00" }
 
   - venue_id: "54591"
     name: "Bonnie's"
@@ -137,8 +137,8 @@ restaurants:
     passive_monitor: false
     day_configs:
       - { day: 4, start: "19:00", end: "21:00" }
-      - { day: 5, start: "19:00", end: "21:00" }
-      - { day: 6, start: "19:00", end: "21:00" }
+      - { day: 5, start: "18:00", end: "21:00" }
+      - { day: 6, start: "18:00", end: "21:00" }
 
   - venue_id: "84732"
     name: "Smithereens"
@@ -147,11 +147,11 @@ restaurants:
     release_time_zone: "America/New_York"
     party_size: 4
     enabled: true
-    passive_monitor: false
+    passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "21:00" }
-      - { day: 5, start: "19:00", end: "21:00" }
-      - { day: 6, start: "19:00", end: "21:00" }
+      - { day: 5, start: "18:00", end: "21:00" }
+      - { day: 6, start: "18:00", end: "21:00" }
 
   - venue_id: "418"
     name: "Lilia"
@@ -163,8 +163,8 @@ restaurants:
     passive_monitor: false
     day_configs:
       - { day: 4, start: "19:00", end: "21:00" }
-      - { day: 5, start: "19:00", end: "21:00" }
-      - { day: 6, start: "19:00", end: "21:00" }
+      - { day: 5, start: "18:00", end: "21:00" }
+      - { day: 6, start: "18:00", end: "21:00" }
 
   - venue_id: "2567"
     name: "Via Carota"
@@ -176,8 +176,8 @@ restaurants:
     passive_monitor: true
     day_configs:
       - { day: 4, start: "19:00", end: "21:00" }
-      - { day: 5, start: "00:00", end: "21:00" }
-      - { day: 6, start: "00:00", end: "21:00" }
+      - { day: 5, start: "17:00", end: "21:00" }
+      - { day: 6, start: "17:00", end: "21:00" }
 
   - venue_id: "65452"
     name: "Tatiana"
